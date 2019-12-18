@@ -9,6 +9,7 @@ import static java.lang.System.exit;
 import static java.lang.System.out;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import pt.ua.gboard.GBoard;
@@ -79,6 +80,11 @@ public final class Map {
 		
 		Gelem store = new ImageGelem("src\\city\\store.jpg", board, 100);
 		
+		Gelem buildings[] = {new ImageGelem("src\\city\\buildings\\building1.png", board, 100),
+		new ImageGelem("src\\city\\buildings\\building2.png", board, 100),
+		new ImageGelem("src\\city\\buildings\\building4.jpg", board, 100)};
+		
+		
 		try {
 			roadHorizontal = new ImageGelem(tga.getImage("src\\city\\roads\\roadEW.tga"), board, 100);
 			roadBaixoDireita = new ImageGelem(tga.getImage("src\\city\\roads\\roadSE.tga"), board, 100);
@@ -148,16 +154,20 @@ public final class Map {
 		}*/
 		
 		
-		board.draw(store, 0, 0, 1);
-		//board.draw(roadHorizontal, 3, 2, 1);
+		//board.draw(store, 0, 0, 1);
+		//board.draw(building1, 0, 1, 1);
+		//board.draw(building2, 0, 2, 1);
+		//board.draw(building3, 0, 3, 1);
+		
+		///board.draw(roadHorizontal, 3, 2, 1);
 		//board.draw(roadBaixoDireita, 3, 1, 0);
 		//board.draw(roadVertical, 2, 1, 1);
 		//board.draw(roadCimaDireita, 1, 1, 0);
 		
 		Gelem temp = null;
 		
-		for (int i = 1; i < board.cellHeight()-1; i++) {
-			for (int j = 1; j < board.cellWidth()-1; j++) {
+		for (int i = 0; i < board.cellHeight()-1; i++) {
+			for (int j = 0; j < board.cellWidth()-1; j++) {
 				if(mapLab[i][j] == 0){
 					//baixo                 cima             esquerda                 direita
 					//if(mapLab[i+1][j]==0 && mapLab[i-1][j]==0 && mapLab[i][j-1]==0 && mapLab[i][j+1]==0))
@@ -189,6 +199,8 @@ public final class Map {
 					
 					
 					board.draw(temp, i, j, 0);
+				}else{
+					board.draw(buildings[new Random().nextInt(buildings.length)], i, j, 0);
 				}
 			}
 		}

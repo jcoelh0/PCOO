@@ -50,18 +50,16 @@ public class Thief extends Thread implements Actions {
 	@Override
 	public void run() {
 
-		//Gelem ge = new ImageGelem(Color.red, 90, N, N);
+		
 		ge = new ImageGelem("src\\entities\\burglar2.png", board, 100);
-		int l = 21;//board.numberOfLines() / 2;
-		int c = 8;//board.numberOfColumns() / 2;
+		
+		int l = getSafeHousePosition().x;
+		int c = getSafeHousePosition().y;
 		
 		
 		System.out.println(l + ", " + c);
 		board.draw(ge, l, c, 1);
-		//System.out.println("x:"+ge.x(1,board.numberOfLines()));
-
-		//Police pol = new Police(ge);
-		//pol.randomWalking(dir, c);
+		
 		int i = 0;
 
 		int lin = l;
@@ -74,16 +72,13 @@ public class Thief extends Thread implements Actions {
 		startPoint.x = 21;
 		startPoint.y = 8;
 		
-		//System.out.println("gps:"+path.getGPSPositions(startPoint,endPoint));
-		
 		
 		int timeUntilRobberyStarts = rand.nextInt(100);
 		
 		while (true) {
 			
-			//System.out.println("lin:" + lin + ",col:" + col);
 			currentPos = randomWalking(lin, col);
-			//System.out.println("lin:" + lin + ",col:" + col);
+			
 			lin = currentPos.x;
 			col = currentPos.y;
 			i++;
@@ -221,21 +216,20 @@ public class Thief extends Thread implements Actions {
 	}
 	
 	private void goToSafeHouse(Point currentPos){
-		while(!caught){
+		//while(!caught){
 			
+		List positions = path.getGPSPositions( new Point(currentPos.x, currentPos.y), getSafeHousePosition());
 			
-			List positions = path.getGPSPositions( new Point(currentPos.x, currentPos.y), getSafeHousePosition());
+		Point newPos = goToPosition(currentPos.x, currentPos.y, positions);
 			
-			Point newPos = goToPosition(currentPos.x, currentPos.y, positions);
+		currentPos.x = newPos.x;
+		currentPos.y = newPos.y;
 			
-			currentPos.x = newPos.x;
-			currentPos.y = newPos.y;
-			
-		}
+		//}
 	}
 	
 	private Point decideWhichStoreToRob(){
-		return storeLocations[0];//rand.nextInt(storeLocations.length)];
+		return storeLocations[rand.nextInt(storeLocations.length)];
 	}
 	
 	private Point getSafeHousePosition(){

@@ -34,7 +34,7 @@ public class Interpol {
 		
 	}
 	
-	public synchronized void waitingForCrime(){
+	public synchronized boolean waitingForCrime(){
 		
 		while(!thiefFound){
 			
@@ -47,7 +47,7 @@ public class Interpol {
 			}
 		}
 		
-		//System.out.println("FINISHED WAITING FOR CRIME");
+		return true;
 	}
 	
 	public boolean PoliceFoundThief(int lin, int col) {

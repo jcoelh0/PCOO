@@ -43,6 +43,7 @@ public class Police extends Thread implements Actions {
 		this.interpol = interpol;
 		path = new PathFinder(labyrinth, symbols, blocksArray);
 		this.prison = prison;
+		currentPos = new Point();
 	}
 
 	@Override
@@ -50,31 +51,22 @@ public class Police extends Thread implements Actions {
 
 		//Gelem ge = new ImageGelem(Color.red, 90, N, N);
 		ge = new ImageGelem("src\\entities\\police.png", board, 100);
-		int l = 1;//board.numberOfLines() / 2;
-		int c = 15;//board.numberOfColumns() / 2;
+		currentPos.x = prison.x;//board.numberOfLines() / 2;
+		currentPos.y  = prison.y;//board.numberOfColumns() / 2;
 
 		
-		//int incCol = -1;
-		System.out.println(l + ", " + c);
-		board.draw(ge, l, c, 1);
-		//System.out.println("x:"+ge.x(1,board.numberOfLines()));
-
-		//Police pol = new Police(ge);
-		//pol.randomWalking(dir, c);
-		int i = 0;
-
-		int lin = l;
-		int col = c;
+		board.draw(ge, currentPos.x, currentPos.y, 1);
 
 		while (!thiefFound) {
 
-			interpol.waitingForCrime();
+			if(!interpol.waitingForCrime())
+				break;
 			
 			
-			
-			catchThief(new Point(lin,col));
+			catchThief();
 		}
-		bringThiefToPrison();
+		if(thiefFound)
+			bringThiefToPrison();
 	}
 
 	@Override
@@ -135,13 +127,13 @@ public class Police extends Thread implements Actions {
 		return pos;
 	}
 
-	private void catchThief(Point currentPos) {
+	private void catchThief() {
 		while (!thiefFound) {
 			Point thiefPos = interpol.getThiefPosition();
 			
 			List<Node> positions = path.getGPSPositions(currentPos, thiefPos);
 			
-			this.currentPos = goToPosition(currentPos.x, currentPos.y, positions);
+			currentPos = goToPosition(currentPos.x, currentPos.y, positions);
 		}
 
 	}
