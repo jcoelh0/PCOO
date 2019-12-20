@@ -209,12 +209,9 @@ public class Thief extends Thread implements Actions {
 		
 		store.robItem(currentPos, id);
 		
-		//interpol.theftReported();
-		//interpol.setThiefPosition(currentPos.x, currentPos.y);
 	}
 	
 	private void goToSafeHouse(Point currentPos){
-		//while(!caught){
 			
 		List positions = path.getGPSPositions( new Point(currentPos.x, currentPos.y), getSafeHousePosition());
 			
@@ -222,8 +219,6 @@ public class Thief extends Thread implements Actions {
 			
 		currentPos.x = newPos.x;
 		currentPos.y = newPos.y;
-			
-		//}
 	}
 	
 	private Point decideWhichStoreToRob(){

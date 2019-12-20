@@ -68,7 +68,7 @@ public class CityRun {
 		Thief[] thf = new Thief[numberOfThiefs];
 		
 		for (int i = 0; i < pol.length; i++) {
-			pol[i] = new Police(labyrinth, symbols, interpol, blocksArray, map.getPrisonPosition());
+			pol[i] = new Police(labyrinth, symbols, interpol, blocksArray, map.getPrisonPosition(), i);
 			
 		}
 		
