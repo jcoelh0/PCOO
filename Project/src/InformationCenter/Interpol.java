@@ -23,9 +23,10 @@ public class Interpol {
 	private boolean tsry = false;
 	LinkedList<Integer> thiefs = new LinkedList<>();
 	private boolean theftHappening = false;
+	private Point prison;
 	
 	
-	public Interpol(int numberOfThiefs){
+	public Interpol(int numberOfThiefs, Point prison){
 		policeFoundThief = new boolean[numberOfThiefs];
 		thiefPosition = new Point[numberOfThiefs];
 		thiefFound = new boolean[numberOfThiefs];	
@@ -37,6 +38,7 @@ public class Interpol {
 		}
 		thiefCaught = false;
 		this.numberOfThiefs = numberOfThiefs;
+		this.prison = prison;
 		
 	}
 	
@@ -84,7 +86,11 @@ public class Interpol {
 		
         for (int i = 0; i < numberOfThiefs; i++) {
 			
-			if((lin == thiefPosition[i].x && col == thiefPosition[i].y))/* || // to fix the same position and not "catching"
+			if((lin == thiefPosition[i].x && col == thiefPosition[i].y) 
+				&& lin!= prison.x && col!=prison.y)
+				
+				
+				/* || // to fix the same position and not "catching"
 				(lin-1 == thiefPosition[i].x && col == thiefPosition[i].y) ||
 				(lin == thiefPosition[i].x && col+1 == thiefPosition[i].y) ||
 				(lin == thiefPosition[i].x && col-1 == thiefPosition[i].y) ||
@@ -96,7 +102,7 @@ public class Interpol {
         return -1;
     }
 	
-	public boolean policeFoundThief(int id) {
+	public synchronized boolean policeFoundThief(int id) {
 		return policeFoundThief[id];
     }
 	
@@ -110,7 +116,7 @@ public class Interpol {
 		return thiefPosition[id];
 	}
 	
-	public boolean getTheftStatus(){
+	public synchronized boolean getTheftStatus(){
 		return theftHappening;
 	}
 	
@@ -122,11 +128,11 @@ public class Interpol {
 		return thiefGoingToPrison;
 	}
 	
-	public int getNumberOfThiefs(){
+	public synchronized int getNumberOfThiefs(){
 		return numberOfThiefs;
 	}
 	
-	public void safe(int id){
+	public synchronized void safe(int id){
 		thiefFound[id] = false;
 		thiefsFound = false;
 		numberOfThiefs -= 1;

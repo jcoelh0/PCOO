@@ -28,13 +28,13 @@ public final class Map {
 	private final List<int[]> blocksArray;
 	private Point prisonSymbol, thiefHome, store1, store2;
 	
-	public Map(char[] symbols, Gelem[] gelems){
+	public Map(char[] symbols, Gelem[] gelems, Point[] points){
 		blocksArray = new ArrayList<>();
-		createMap(symbols, gelems);
+		createMap(symbols, gelems, points);
 		
 	}
 	
-	public void createMap(char[] symbols, Gelem[] gelems){
+	public void createMap(char[] symbols, Gelem[] gelems, Point[] points){
 		String map = "map1.txt";
 		
 		out.println("Usage: CityRun <map-file>");
@@ -56,10 +56,10 @@ public final class Map {
 		
 		board = labyrinth.board;
 		
-		prisonSymbol = new Point(18,22);
-		thiefHome = new Point(17,1);
-		store1 = new Point(4,22);
-		store2 = new Point(9,19);
+		prisonSymbol = points[0];
+		thiefHome = points[1];
+		store1 = points[2];
+		store2 = points[3];
 		
 		TargaReader tga = new TargaReader();
 		
