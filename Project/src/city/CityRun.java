@@ -1,36 +1,16 @@
-
-//import static TestLabyrinth.board;
 import InformationCenter.Interpol;
 import city.Map;
 import city.Store;
 import entities.Helicopter;
-import path.PathFinder;
 import entities.Police;
 import entities.Thief;
 import java.awt.Color;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import static java.lang.System.err;
-import static java.lang.System.exit;
-import static java.lang.System.out;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import path.PathFinder;
-import pt.ua.gboard.GBoard;
 import pt.ua.gboard.Gelem;
-import pt.ua.gboard.basic.FilledGelem;
-import pt.ua.gboard.basic.ImageGelem;
 import pt.ua.gboard.basic.StringGelem;
 import pt.ua.gboard.games.Labyrinth;
-import pt.ua.gboard.games.LabyrinthGelem;
-import pt.ua.gboard.games.PacmanGelem;
 
 /**
  *
@@ -40,6 +20,10 @@ public class CityRun {
 
 	public static void main(String[] args) {
 		
+		int numberOfThiefs = 10;
+		int numberOfPolice = 10;
+
+
 		char prisonSymbol = 'P';
 		char store1 = '1';
 		char store2 = '2';
@@ -69,7 +53,7 @@ public class CityRun {
 		
 		Labyrinth labyrinth = map.getLabyrinth();
 		
-		Interpol interpol = new Interpol();
+		Interpol interpol = new Interpol(numberOfThiefs);
 		
 		Store store = new Store(interpol);
 		
@@ -80,25 +64,57 @@ public class CityRun {
 			blocksArray[i]= blocksArrayList.get(i);
 		}
 		
+		Police[] pol = new Police[numberOfPolice];
+		Thief[] thf = new Thief[numberOfThiefs];
 		
-		Police pol1 = new Police(labyrinth, symbols, interpol, blocksArray, map.getPrisonPosition());
-		Thief thf1 = new Thief(labyrinth, symbols, interpol, blocksArray, map.getStorePositions(), store);
-		Helicopter heli = new Helicopter(thf1, interpol);
+		for (int i = 0; i < pol.length; i++) {
+			pol[i] = new Police(labyrinth, symbols, interpol, blocksArray, map.getPrisonPosition());
+			
+		}
 		
-		pol1.start();
-		thf1.start();
+		for (int i = 0; i < thf.length; i++) {
+			thf[i] = new Thief(labyrinth, symbols, interpol, blocksArray, map.getStorePositions(), store, i);
+		}
+		
+		
+		
+		for (int i = 0; i < pol.length; i++) {
+			pol[i].start();
+		}
+		
+		for (int i = 0; i < thf.length; i++) {
+			thf[i].start();
+		}
+		
+		Helicopter heli = new Helicopter(thf, interpol);
+		
 		heli.start();
 		
+		
 		try {
-			pol1.join();
-			System.err.println("Police died!");	
+			for (int i = 0; i < pol.length; i++) {
+				pol[i].join();
+				
+				System.err.println("Police " + i + " died!");
+			}	
 		} catch (InterruptedException ex) {
-			Logger.getLogger(CityRun.class.getName()).log(Level.SEVERE, null, ex);
+			//Logger.getLogger(CityRun.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		
 		try {
-			thf1.join();
-			System.err.println("Thief died!");	
+			for (int i = 0; i < thf.length; i++) {
+				thf[i].join();
+				System.err.println("Thief "+i+" died!");	
+			}
+		} catch (InterruptedException ex) {
+			//Logger.getLogger(CityRun.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		
+		//map.terminate();
+		
+		try {
+			heli.join();
+			System.err.println("Heli died!");
 		} catch (InterruptedException ex) {
 			Logger.getLogger(CityRun.class.getName()).log(Level.SEVERE, null, ex);
 		}

@@ -59,7 +59,7 @@ public final class Map {
 		
 		board = labyrinth.board;
 		
-		prisonSymbol = new Point(22,10);
+		prisonSymbol = new Point(17,21);
 		thiefHome = new Point(17,1);
 		store1 = new Point(4,22);
 		store2 = new Point(9,19);
@@ -122,10 +122,6 @@ public final class Map {
 		//store2
 		labyrinth.attachGelemToRoadSymbol(symbols[3], gelems[3]);
 		
-		
-
-		
-		System.out.println(labyrinth.numberOfLines+" "+labyrinth.numberOfColumns);
 		int[][] mapLab = new int[labyrinth.numberOfLines][labyrinth.numberOfColumns];
 		int l = 0, c = 0;
 		boolean isRoad = false;
@@ -207,13 +203,13 @@ public final class Map {
 		
 		l--;
 		c--;
-		labyrinth.putRoadSymbol(22, 10, symbols[0]);
+		labyrinth.putRoadSymbol(prisonSymbol.x, prisonSymbol.y, symbols[0]);
 		
-		labyrinth.putRoadSymbol(17, 1, symbols[1]);
+		labyrinth.putRoadSymbol(thiefHome.x, thiefHome.y, symbols[1]);
 		
-		labyrinth.putRoadSymbol(4, 22, symbols[2]);
+		labyrinth.putRoadSymbol(store1.x, store1.y, symbols[2]);
 		
-		labyrinth.putRoadSymbol(9, 19, symbols[3]);
+		labyrinth.putRoadSymbol(store2.x, store2.y, symbols[3]);
 		
 		pause(1000);
 		
@@ -246,6 +242,9 @@ public final class Map {
 			exit(1);
 		}
 	}
-
+	
+	public void terminate(){
+		board.terminate();
+	}
 	
 }

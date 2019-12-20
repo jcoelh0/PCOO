@@ -16,12 +16,13 @@ public class Store {
 		this.interpol = interpol;
 	}
 	
-	private void soundAlarm(Point storePoint){
-		interpol.theftReported();
-		interpol.setThiefPosition(storePoint.x, storePoint.y);
+	private void soundAlarm(Point storePoint, int id){
+		System.out.println("Ladrao nº "+id+"assaltou loja");
+		interpol.theftReported(id);
+		interpol.setThiefPosition(storePoint.x, storePoint.y, id);
 	}
 	
-	public void robItem(Point storeLocation){
-		soundAlarm(storeLocation);
+	public void robItem(Point storeLocation, int id){
+		soundAlarm(storeLocation, id);
 	}
 }

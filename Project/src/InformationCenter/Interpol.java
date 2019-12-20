@@ -2,6 +2,7 @@ package InformationCenter;
 
 import entities.Thief;
 import java.awt.Point;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,70 +12,107 @@ import java.util.logging.Logger;
  */
 public class Interpol {
 
-	private boolean thiefFound;
-	private Point thiefPosition;
-	private Point lastThiefPosition;
+	private boolean[] thiefFound;
+	private Point[] thiefPosition;
+	private boolean thiefSearh = true;
 	private final boolean thiefCaught;
-	private boolean policeFoundThief;
+	private boolean[] policeFoundThief;
 	private boolean thiefGoingToPrison = false;
+	private int numberOfThiefs;
+	private boolean thiefsFound = false;
+	private boolean tsry = false;
+	LinkedList<Integer> thiefs = new LinkedList<Integer>();
+	private boolean theftHappening = false;
 	
 	
-	public Interpol(){
+	public Interpol(int numberOfThiefs){
+		policeFoundThief = new boolean[numberOfThiefs];
+		thiefPosition = new Point[numberOfThiefs];
+		thiefFound = new boolean[numberOfThiefs];	
+		
+		for (int i = 0; i < numberOfThiefs; i++) {
+			policeFoundThief[i] = false;
+			thiefPosition[i] = new Point();
+			thiefFound[i] = false;
+		}
 		thiefCaught = false;
-		thiefFound = false;
-		thiefPosition = new Point();
-		
+		this.numberOfThiefs = numberOfThiefs;
 		
 	}
 	
-	public synchronized void theftReported(){
-		System.out.println("TheftReported");
-		thiefFound = true;
-		notifyAll();
+	public synchronized void theftReported(int id){
+		theftHappening = true;
+		thiefsFound = true;
+		tsry = true;
+		thiefs.add(id);
+		System.err.println("theft reported "+id);
+		notify();
 		
 	}
 	
-	public synchronized boolean waitingForCrime(){
+	public synchronized int waitingForCrime(){		
 		
-		while(!thiefFound){
+		while(!tsry && numberOfThiefs!=0){ ////////////////////////fix
 			
 			System.out.println("waiting for crime");
 			try {
-				wait();
+				wait();	
 			} catch (InterruptedException ex) {
 				Logger.getLogger(Interpol.class.getName()).log(Level.SEVERE, null, ex);
 				System.err.println("Error ocurred in waitingForCrime");
 			}
+			
+			/*thiefsFound = false;
+			for (int i = 0; i < thiefFound.length; i++) {
+
+				thiefsFound = thiefsFound | thiefFound[i];
+				if(thiefFound[i]){
+					System.err.println("thief found lets see "+i);
+					idx = i;
+					break;
+				}
+				System.err.println("thief foundd "+i);
+			}*/
+			
+			System.err.println(thiefsFound);
 		}
+		tsry = false;
+		if(numberOfThiefs==0)
+			return -1;
+		return thiefs.remove();
+	}
+	
+	public int PoliceFoundThief(int lin, int col) {
+        assert thiefPosition != null;
 		
-		return true;
-	}
-	
-	public boolean PoliceFoundThief(int lin, int col) {
-        if(thiefPosition == null)
-            return false;
-        
-        if(lin == thiefPosition.x && col == thiefPosition.y) {
-            this.policeFoundThief = true;
-            return true;
-        }
-        else return false;
+        for (int i = 0; i < numberOfThiefs; i++) {
+			
+			if(lin == thiefPosition[i].x && col == thiefPosition[i].y) {
+				System.out.println("police foundd thieeeeeef");
+				policeFoundThief[i] = true;
+				return i;
+			}
+		}
+        return -1;
     }
 	
-	public synchronized boolean policeFoundThief() {
-		return this.policeFoundThief;
+	public boolean policeFoundThief(int id) {
+		return policeFoundThief[id];
     }
 	
-	public void setThiefPosition(int lin, int col){
-		thiefPosition.setLocation(lin, col);
+	public void setThiefPosition(int lin, int col, int id){
+		thiefFound[id] = true;
+		thiefsFound = true;
+		thiefPosition[id].setLocation(lin, col);
 	}
 	
-	public Point getThiefPosition(){
-		return thiefPosition;
+	public synchronized Point getThiefPosition(int id){
+		System.err.println("id:"+id);
+		return thiefPosition[id];
 	}
 	
-	public boolean getThiefSituation(){
-		return thiefFound;
+	public boolean getTheftStatus(){
+		return theftHappening;
 	}
 	
 	public void setThiefGoingToPrison(){
@@ -83,5 +121,23 @@ public class Interpol {
 	
 	public synchronized boolean getThiefGoingToPrison(){
 		return thiefGoingToPrison;
+	}
+	
+	public int getNumberOfThiefs(){
+		return numberOfThiefs;
+	}
+	
+	public void safe(int id){
+		thiefFound[id] = false;
+		thiefsFound = false;
+		numberOfThiefs -= 1;
+	}
+	
+	public boolean thiefFound(int id){
+		return thiefFound[id];
+	}
+	
+	public synchronized void wakePolice(){
+		notifyAll();
 	}
 }

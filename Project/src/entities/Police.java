@@ -10,6 +10,7 @@ import java.awt.Point;
 import static java.lang.System.out;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -26,7 +27,7 @@ import pt.ua.gboard.games.Labyrinth;
  */
 public class Police extends Thread implements Actions {
 
-	private boolean thiefFound = false;
+	private boolean[] thiefFound;
 	Labyrinth labyrinth;
 	protected GBoard board;
 	Random rand = new Random();
@@ -36,14 +37,22 @@ public class Police extends Thread implements Actions {
 	private Point prison;
 	private Point currentPos;
 	private boolean thiefCaught = false;
+	private int index;
+	private boolean arrivedToPrison;
+	private int id;
 
-	public Police(Labyrinth labyrinth, char[] symbols, Interpol interpol, int[][] blocksArray, Point prison) {
+	public Police(Labyrinth labyrinth, char[] symbols, Interpol interpol, int[][] blocksArray, Point prison, int id) {
 		this.labyrinth = labyrinth;
 		board = labyrinth.board;
 		this.interpol = interpol;
 		path = new PathFinder(labyrinth, symbols, blocksArray);
 		this.prison = prison;
 		currentPos = new Point();
+		thiefFound = new boolean[interpol.getNumberOfThiefs()];
+		for (int i = 0; i < thiefFound.length; i++) {
+			thiefFound[i] = false;
+		}
+		this.id = id;
 	}
 
 	@Override
@@ -51,22 +60,48 @@ public class Police extends Thread implements Actions {
 
 		//Gelem ge = new ImageGelem(Color.red, 90, N, N);
 		ge = new ImageGelem("src\\entities\\police.png", board, 100);
-		currentPos.x = prison.x;//board.numberOfLines() / 2;
-		currentPos.y  = prison.y;//board.numberOfColumns() / 2;
+		currentPos.x = prison.x;
+		currentPos.y  = prison.y;
 
 		
 		board.draw(ge, currentPos.x, currentPos.y, 1);
-
-		while (!thiefFound) {
-
-			if(!interpol.waitingForCrime())
+		
+		boolean thiefsFound;
+		
+		LinkedList<Integer> thiefs = new LinkedList<Integer>();
+		
+		for (int i = 0; i < interpol.getNumberOfThiefs(); i++) {
+			thiefs.add(i);
+		}
+		
+		while(interpol.getNumberOfThiefs() != 0){
+			
+			int idx = interpol.waitingForCrime();
+			
+			if(idx == -1)
 				break;
 			
+			thiefsFound = false;
 			
-			catchThief();
+			
+			//while (!thiefFound[idx]) {
+
+				
+				
+			catchThief(idx);
+			
+			for (int i = 0; i < thiefFound.length; i++) {
+				thiefsFound = thiefsFound || thiefFound[i];
+			}
+			
+			goToPrison(thiefsFound);
+			
+			if(thiefsFound){
+				thiefCaught = false;
+				System.err.println("Police "+ id + "caught thief " + idx + "!");
+			}
+			
 		}
-		if(thiefFound)
-			bringThiefToPrison();
 	}
 
 	@Override
@@ -127,15 +162,18 @@ public class Police extends Thread implements Actions {
 		return pos;
 	}
 
-	private void catchThief() {
-		while (!thiefFound) {
-			Point thiefPos = interpol.getThiefPosition();
+	private void catchThief(int id) {
+		
+		
+		while (interpol.thiefFound(id) && interpol.getNumberOfThiefs() != 0 ) { ///FIX THIS
+			Point thiefPos = interpol.getThiefPosition(id);
+			System.err.println("looooop");
 			
 			List<Node> positions = path.getGPSPositions(currentPos, thiefPos);
 			
 			currentPos = goToPosition(currentPos.x, currentPos.y, positions);
 		}
-
+		arrivedToPrison = false;
 	}
 
 	public Point goToPosition(int currentLine, int currentColumn, List<Node> positions) {
@@ -158,9 +196,13 @@ public class Police extends Thread implements Actions {
 		
 		GBoard.sleep(100);
 		
-		if(interpol.PoliceFoundThief(currentLine, currentColumn) && !thiefCaught){
-            System.err.println("Cop found Thief!");
-			thiefFound = true;
+		int thiefIdx = interpol.PoliceFoundThief(currentLine, currentColumn);
+		if(thiefIdx != -1 && !thiefCaught){
+            
+			System.err.println("Cop found Thief!");
+			thiefFound[thiefIdx] = true;
+			index = thiefIdx;
+			//thiefCaught = true;
 			//while(true);
 			return false;
 		}
@@ -172,13 +214,17 @@ public class Police extends Thread implements Actions {
 		return true;
 	}
 
-	private void bringThiefToPrison() {
+	private void goToPrison(boolean caught) {
 		
-		thiefCaught = true;
+		if(caught)
+			thiefCaught = true;
+		arrivedToPrison = true;
 		List<Node> positions = path.getGPSPositions(currentPos, prison);
 			
 		currentPos = goToPosition(currentPos.x, currentPos.y, positions);
 		
 	}
+	
+	
 
 }

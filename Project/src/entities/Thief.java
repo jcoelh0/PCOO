@@ -2,12 +2,8 @@ package entities;
 
 import InformationCenter.Interpol;
 import city.Store;
-import java.awt.Color;
 import java.awt.Point;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,7 +22,7 @@ public class Thief extends Thread implements Actions {
 
 	Labyrinth labyrinth;
 	protected GBoard board;
-	private Random rand = new Random();
+	private final Random rand = new Random();
 	Gelem ge;
 	private final char[] symbols;
 	private final Interpol interpol;
@@ -36,8 +32,9 @@ public class Thief extends Thread implements Actions {
 	private final Point[] storeLocations;
 	private final Store store;
 	private boolean goingToPrison = false;
+	private int id;
 	
-	public Thief(Labyrinth labyrinth, char[] symbols, Interpol interpol, int[][] blocksArray, Point[] storeLocations, Store store) {
+	public Thief(Labyrinth labyrinth, char[] symbols, Interpol interpol, int[][] blocksArray, Point[] storeLocations, Store store, int id) {
 		this.labyrinth = labyrinth;
 		this.symbols = symbols;
 		board = labyrinth.board;
@@ -45,6 +42,7 @@ public class Thief extends Thread implements Actions {
 		path = new PathFinder(labyrinth, symbols, blocksArray);
 		this.storeLocations = storeLocations;
 		this.store = store;
+		this.id = id;
 	}
 
 	@Override
@@ -57,7 +55,6 @@ public class Thief extends Thread implements Actions {
 		int c = getSafeHousePosition().y;
 		
 		
-		System.out.println(l + ", " + c);
 		board.draw(ge, l, c, 1);
 		
 		int i = 0;
@@ -65,13 +62,6 @@ public class Thief extends Thread implements Actions {
 		int lin = l;
 		int col = c;
 
-		
-		
-		Point startPoint = new Point();
-		
-		startPoint.x = 21;
-		startPoint.y = 8;
-		
 		
 		int timeUntilRobberyStarts = rand.nextInt(100);
 		
@@ -86,24 +76,29 @@ public class Thief extends Thread implements Actions {
 			if(i>timeUntilRobberyStarts){
 				List<Node> astar = path.getGPSPositions(currentPos,decideWhichStoreToRob());
 				
-				if(astar != null){
-					currentPos = goToPosition(currentPos.x, currentPos.y, astar);
-					break;
-				}
+				
+				currentPos = goToPosition(currentPos.x, currentPos.y, astar);
+				break;
+				
 			}
 		}
 		robbing(currentPos);
 		goToSafeHouse(currentPos);
-		System.err.println("finisheeeed - thief");
-		if(caught)
-			goToPrison();
 		
-			
+		if(caught){
+			interpol.safe(id);
+			goToPrison();
+			System.err.println("Thief "+ id + "caught!");
+		}else{
+			interpol.safe(id);
+			System.err.println("Thief "+ id + "escaped to safe house!");
+		}
+		
+		
 	}
 	
 	public Point goToPosition(int currentLine, int currentColumn, List<Node> positions) {
 		assert positions != null;
-		
 		
 		for (Node node : positions) {
             // get line and col from positions
@@ -119,12 +114,16 @@ public class Thief extends Thread implements Actions {
     }
 	
 	public boolean moveToPosition(int currentLine, int currentColumn, int line, int column) {
-       
-		GBoard.sleep(100);
-		interpol.setThiefPosition(line, column);
 		
-		if(interpol.policeFoundThief() && !goingToPrison){
-			System.err.println("thief not moving");
+		if(goingToPrison)
+			GBoard.sleep(100);
+		else
+			GBoard.sleep(100);
+		
+		interpol.setThiefPosition(line, column, id);
+		
+		if(interpol.policeFoundThief(id) && !goingToPrison){
+			//System.err.println("thief not moving");
 			caught = true;
 			//goToPrison();
 			return false;
@@ -168,8 +167,7 @@ public class Thief extends Thread implements Actions {
 				break;
 			}
 		}
-		//System.out.println("lin:" + lin + ",col:" + col);
-		//System.out.println("lin:" + options[n][0] + ",col:" + options[n][1]);
+		
 		GBoard.sleep(100);
 		board.move(ge, lin, col, 1, options[n][0], options[n][1], 1);
 
@@ -209,7 +207,7 @@ public class Thief extends Thread implements Actions {
 			System.exit(1);
 		}
 		
-		store.robItem(currentPos);
+		store.robItem(currentPos, id);
 		
 		//interpol.theftReported();
 		//interpol.setThiefPosition(currentPos.x, currentPos.y);
@@ -250,7 +248,7 @@ public class Thief extends Thread implements Actions {
 	
 	private void goToPrison(){
 		goingToPrison = true;
-		System.err.println("goTOPrision");
+		//System.err.println("goTOPrision");
 		List positions = path.getGPSPositions( new Point(currentPos.x, currentPos.y), getPrisonPosition());
 			
 		currentPos = goToPosition(currentPos.x, currentPos.y, positions);
