@@ -21,7 +21,7 @@ public class Interpol {
 	private int numberOfThiefs;
 	private boolean thiefsFound = false;
 	private boolean tsry = false;
-	LinkedList<Integer> thiefs = new LinkedList<Integer>();
+	LinkedList<Integer> thiefs = new LinkedList<>();
 	private boolean theftHappening = false;
 	
 	
@@ -45,16 +45,14 @@ public class Interpol {
 		thiefsFound = true;
 		tsry = true;
 		thiefs.add(id);
-		System.err.println("theft reported "+id);
 		notify();
 		
 	}
 	
 	public synchronized int waitingForCrime(){		
 		
-		while(!tsry && numberOfThiefs!=0){ ////////////////////////fix
+		while(!tsry && numberOfThiefs!=0){
 			
-			System.out.println("waiting for crime");
 			try {
 				wait();	
 			} catch (InterruptedException ex) {
@@ -74,7 +72,6 @@ public class Interpol {
 				System.err.println("thief foundd "+i);
 			}*/
 			
-			System.err.println(thiefsFound);
 		}
 		tsry = false;
 		if(numberOfThiefs==0)
@@ -87,8 +84,11 @@ public class Interpol {
 		
         for (int i = 0; i < numberOfThiefs; i++) {
 			
-			if(lin == thiefPosition[i].x && col == thiefPosition[i].y) {
-				System.out.println("police foundd thieeeeeef");
+			if((lin == thiefPosition[i].x && col == thiefPosition[i].y))/* || // to fix the same position and not "catching"
+				(lin-1 == thiefPosition[i].x && col == thiefPosition[i].y) ||
+				(lin == thiefPosition[i].x && col+1 == thiefPosition[i].y) ||
+				(lin == thiefPosition[i].x && col-1 == thiefPosition[i].y) ||
+				(lin+1 == thiefPosition[i].x && col == thiefPosition[i].y))*/ {
 				policeFoundThief[i] = true;
 				return i;
 			}
@@ -107,7 +107,6 @@ public class Interpol {
 	}
 	
 	public synchronized Point getThiefPosition(int id){
-		System.err.println("id:"+id);
 		return thiefPosition[id];
 	}
 	

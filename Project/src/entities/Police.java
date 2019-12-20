@@ -1,18 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package entities;
 
 import InformationCenter.Interpol;
 import java.awt.Point;
-import static java.lang.System.out;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import path.Node;
 import path.PathFinder;
@@ -32,14 +23,12 @@ public class Police extends Thread implements Actions {
 	protected GBoard board;
 	Random rand = new Random();
 	Gelem ge;
-	private Interpol interpol;
-	private PathFinder path;
-	private Point prison;
+	private final Interpol interpol;
+	private final PathFinder path;
+	private final Point prison;
 	private Point currentPos;
 	private boolean thiefCaught = false;
-	private int index;
-	private boolean arrivedToPrison;
-	private int id;
+	private final int id;
 
 	public Police(Labyrinth labyrinth, char[] symbols, Interpol interpol, int[][] blocksArray, Point prison, int id) {
 		this.labyrinth = labyrinth;
@@ -58,7 +47,6 @@ public class Police extends Thread implements Actions {
 	@Override
 	public void run() {
 
-		//Gelem ge = new ImageGelem(Color.red, 90, N, N);
 		ge = new ImageGelem("src\\entities\\police.png", board, 100);
 		currentPos.x = prison.x;
 		currentPos.y  = prison.y;
@@ -68,7 +56,7 @@ public class Police extends Thread implements Actions {
 		
 		boolean thiefsFound;
 		
-		LinkedList<Integer> thiefs = new LinkedList<Integer>();
+		LinkedList<Integer> thiefs = new LinkedList<>();
 		
 		for (int i = 0; i < interpol.getNumberOfThiefs(); i++) {
 			thiefs.add(i);
@@ -82,12 +70,7 @@ public class Police extends Thread implements Actions {
 				break;
 			
 			thiefsFound = false;
-			
-			
-			//while (!thiefFound[idx]) {
-
-				
-				
+						
 			catchThief(idx);
 			
 			for (int i = 0; i < thiefFound.length; i++) {
@@ -98,7 +81,7 @@ public class Police extends Thread implements Actions {
 			
 			if(thiefsFound){
 				thiefCaught = false;
-				System.err.println("Police "+ id + "caught thief " + idx + "!");
+				//System.err.println("Police "+ id + " caught thief " + idx + "!");
 			}
 			
 		}
@@ -134,8 +117,7 @@ public class Police extends Thread implements Actions {
 				break;
 			}
 		}
-		//System.out.println("lin:"+lin+",col:"+col);
-		//System.out.println("lin:"+options[n][0]+",col:"+options[n][1]);
+		
 		board.move(ge, lin, col, 1, options[n][0], options[n][1], 1);
 
 		switch (n) {
@@ -167,13 +149,11 @@ public class Police extends Thread implements Actions {
 		
 		while (interpol.thiefFound(id) && interpol.getNumberOfThiefs() != 0 ) { ///FIX THIS
 			Point thiefPos = interpol.getThiefPosition(id);
-			System.err.println("looooop");
 			
 			List<Node> positions = path.getGPSPositions(currentPos, thiefPos);
 			
 			currentPos = goToPosition(currentPos.x, currentPos.y, positions);
 		}
-		arrivedToPrison = false;
 	}
 
 	public Point goToPosition(int currentLine, int currentColumn, List<Node> positions) {
@@ -181,7 +161,7 @@ public class Police extends Thread implements Actions {
 		
 		
 		for (Node node : positions) {
-            // get line and col from positions
+			
             if(!moveToPosition(currentLine, currentColumn, node.getRow(), node.getCol()))
 				break;
 			
@@ -199,11 +179,8 @@ public class Police extends Thread implements Actions {
 		int thiefIdx = interpol.PoliceFoundThief(currentLine, currentColumn);
 		if(thiefIdx != -1 && !thiefCaught){
             
-			System.err.println("Cop found Thief!");
 			thiefFound[thiefIdx] = true;
-			index = thiefIdx;
-			//thiefCaught = true;
-			//while(true);
+			
 			return false;
 		}
 		
@@ -218,13 +195,9 @@ public class Police extends Thread implements Actions {
 		
 		if(caught)
 			thiefCaught = true;
-		arrivedToPrison = true;
 		List<Node> positions = path.getGPSPositions(currentPos, prison);
 			
 		currentPos = goToPosition(currentPos.x, currentPos.y, positions);
 		
 	}
-	
-	
-
 }

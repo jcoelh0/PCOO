@@ -1,7 +1,5 @@
 package city;
 
-import java.awt.Color;
-import java.awt.Image;
 import java.awt.Point;
 import java.io.IOException;
 import static java.lang.System.err;
@@ -15,7 +13,6 @@ import java.util.logging.Logger;
 import pt.ua.gboard.GBoard;
 import pt.ua.gboard.Gelem;
 import pt.ua.gboard.basic.ImageGelem;
-import pt.ua.gboard.basic.StringGelem;
 import pt.ua.gboard.games.Labyrinth;
 import pt.ua.gboard.games.LabyrinthGelem;
 
@@ -28,7 +25,7 @@ public final class Map {
 	protected static int N;
 	protected static GBoard board;
 	protected static Labyrinth labyrinth;
-	private List<int[]> blocksArray;
+	private final List<int[]> blocksArray;
 	private Point prisonSymbol, thiefHome, store1, store2;
 	
 	public Map(char[] symbols, Gelem[] gelems){
@@ -59,7 +56,7 @@ public final class Map {
 		
 		board = labyrinth.board;
 		
-		prisonSymbol = new Point(17,21);
+		prisonSymbol = new Point(18,22);
 		thiefHome = new Point(17,1);
 		store1 = new Point(4,22);
 		store2 = new Point(9,19);
@@ -134,7 +131,6 @@ public final class Map {
 		for (int le = 0;  le < labyrinth.numberOfLines; le++) {
 			for (int co = 0;  co < labyrinth.numberOfColumns; co++) {
 				isRoad = labyrinth.isRoad(le, co);
-				//System.out.println(le+","+co+"="+isRoad);
 				if(isRoad)
 					mapLab[le][co] = 0;
 				else{
@@ -143,30 +139,17 @@ public final class Map {
 				}
 			}
 		}
-		/*for (l = 0; l < labyrinth.numberOfLines; l++) {
-			for (c = 0; c < labyrinth.numberOfColumns; c++) {
-				System.out.print(mapLab[l][c]+",");
-			}
-		}*/
-		
-		
-		//board.draw(store, 0, 0, 1);
-		//board.draw(building1, 0, 1, 1);
-		//board.draw(building2, 0, 2, 1);
-		//board.draw(building3, 0, 3, 1);
-		
-		///board.draw(roadHorizontal, 3, 2, 1);
-		//board.draw(roadBaixoDireita, 3, 1, 0);
-		//board.draw(roadVertical, 2, 1, 1);
-		//board.draw(roadCimaDireita, 1, 1, 0);
 		
 		Gelem temp = null;
 		
+		
+		
+		//Creation of the map with images
 		for (int i = 0; i < board.cellHeight()-1; i++) {
 			for (int j = 0; j < board.cellWidth()-1; j++) {
 				if(mapLab[i][j] == 0){
 					//baixo                 cima             esquerda                 direita
-					//if(mapLab[i+1][j]==0 && mapLab[i-1][j]==0 && mapLab[i][j-1]==0 && mapLab[i][j+1]==0))
+					
 					if(mapLab[i+1][j]+mapLab[i-1][j]+mapLab[i][j-1]+mapLab[i][j+1]>2)
 						temp = roadTudo;
 					else if(mapLab[i+1][j]==1 && mapLab[i-1][j]==0 && mapLab[i][j-1]==0 && mapLab[i][j+1]==0){

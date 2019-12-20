@@ -88,10 +88,10 @@ public class Thief extends Thread implements Actions {
 		if(caught){
 			interpol.safe(id);
 			goToPrison();
-			System.err.println("Thief "+ id + "caught!");
+			//System.err.println("Thief "+ id + "caught!");
 		}else{
 			interpol.safe(id);
-			System.err.println("Thief "+ id + "escaped to safe house!");
+			//System.err.println("Thief "+ id + "escaped to safe house!");
 		}
 		
 		
@@ -101,7 +101,7 @@ public class Thief extends Thread implements Actions {
 		assert positions != null;
 		
 		for (Node node : positions) {
-            // get line and col from positions
+			
             if(!moveToPosition(currentLine, currentColumn, node.getRow(), node.getCol()))
 				break;
 			
@@ -123,9 +123,9 @@ public class Thief extends Thread implements Actions {
 		interpol.setThiefPosition(line, column, id);
 		
 		if(interpol.policeFoundThief(id) && !goingToPrison){
-			//System.err.println("thief not moving");
+			
 			caught = true;
-			//goToPrison();
+			
 			return false;
 		}
 		
@@ -203,7 +203,7 @@ public class Thief extends Thread implements Actions {
 			Thread.sleep(timeRobbing);
 		} catch (InterruptedException ex) {
 			Logger.getLogger(Thief.class.getName()).log(Level.SEVERE, null, ex);
-			System.err.println("Error waiting - robbing()");
+			System.err.println("Error sleeping - robbing()");
 			System.exit(1);
 		}
 		
@@ -243,7 +243,6 @@ public class Thief extends Thread implements Actions {
 	
 	private void goToPrison(){
 		goingToPrison = true;
-		//System.err.println("goTOPrision");
 		List positions = path.getGPSPositions( new Point(currentPos.x, currentPos.y), getPrisonPosition());
 			
 		currentPos = goToPosition(currentPos.x, currentPos.y, positions);

@@ -20,7 +20,7 @@ public class CityRun {
 
 	public static void main(String[] args) {
 		
-		int numberOfThiefs = 10;
+		int numberOfThiefs = 7;
 		int numberOfPolice = 10;
 
 
@@ -47,8 +47,6 @@ public class CityRun {
 	
 		
 		
-		
-		
 		Map map = new Map(symbols, gelems);
 		
 		Labyrinth labyrinth = map.getLabyrinth();
@@ -58,65 +56,54 @@ public class CityRun {
 		Store store = new Store(interpol);
 		
 		List<int[]> blocksArrayList = map.getBlocksArray();
-		
 		int[][] blocksArray = new int[blocksArrayList.size()][];
+		
 		for (int i = 0; i < blocksArrayList.size(); i++) {
 			blocksArray[i]= blocksArrayList.get(i);
 		}
 		
+		
+		//Creation of threads
 		Police[] pol = new Police[numberOfPolice];
 		Thief[] thf = new Thief[numberOfThiefs];
-		
 		for (int i = 0; i < pol.length; i++) {
-			pol[i] = new Police(labyrinth, symbols, interpol, blocksArray, map.getPrisonPosition(), i);
-			
+			pol[i] = new Police(labyrinth, symbols, interpol, blocksArray, map.getPrisonPosition(), i);	
 		}
 		
 		for (int i = 0; i < thf.length; i++) {
 			thf[i] = new Thief(labyrinth, symbols, interpol, blocksArray, map.getStorePositions(), store, i);
 		}
-		
-		
-		
-		for (int i = 0; i < pol.length; i++) {
-			pol[i].start();
-		}
-		
-		for (int i = 0; i < thf.length; i++) {
-			thf[i].start();
-		}
-		
 		Helicopter heli = new Helicopter(thf, interpol);
 		
+		
+		//Start threads
+		for (Police pol1 : pol) {
+			pol1.start();
+		}
+		for (Thief thf1 : thf) {
+			thf1.start();
+		}
 		heli.start();
 		
-		
+		//Wait until threads die naturally
 		try {
 			for (int i = 0; i < pol.length; i++) {
 				pol[i].join();
 				
 				System.err.println("Police " + i + " died!");
 			}	
-		} catch (InterruptedException ex) {
-			//Logger.getLogger(CityRun.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		
-		try {
 			for (int i = 0; i < thf.length; i++) {
 				thf[i].join();
 				System.err.println("Thief "+i+" died!");	
 			}
+			heli.join();
+			System.err.println("Heli died!");
 		} catch (InterruptedException ex) {
+			//exception not handled as it's not necessary in this case
 			//Logger.getLogger(CityRun.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		
 		//map.terminate();
-		
-		try {
-			heli.join();
-			System.err.println("Heli died!");
-		} catch (InterruptedException ex) {
-			Logger.getLogger(CityRun.class.getName()).log(Level.SEVERE, null, ex);
-		}
+		//to eventually terminate the map
 	}
 }

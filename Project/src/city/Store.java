@@ -17,7 +17,7 @@ public class Store {
 	}
 	
 	private void soundAlarm(Point storePoint, int id){
-		System.out.println("Ladrao nº "+id+"assaltou loja");
+		//System.out.println("Ladrao nº "+id+"assaltou loja");
 		interpol.theftReported(id);
 		interpol.setThiefPosition(storePoint.x, storePoint.y, id);
 	}
