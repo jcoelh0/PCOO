@@ -18,7 +18,7 @@ import pt.ua.gboard.games.Labyrinth;
  *
  * @author João Coelho
  */
-public class Thief extends Thread implements Actions {
+public class Thief extends Thread implements Person {
 
 	Labyrinth labyrinth;
 	protected GBoard board;
@@ -97,6 +97,7 @@ public class Thief extends Thread implements Actions {
 		
 	}
 	
+	@Override
 	public Point goToPosition(int currentLine, int currentColumn, List<Node> positions) {
 		assert positions != null;
 		
@@ -113,6 +114,7 @@ public class Thief extends Thread implements Actions {
         return new Point(currentLine, currentColumn);
     }
 	
+	@Override
 	public boolean moveToPosition(int currentLine, int currentColumn, int line, int column) {
 		
 		if(goingToPrison)
@@ -137,7 +139,6 @@ public class Thief extends Thread implements Actions {
         return true;
     }
 	
-	@Override
 	public Point randomWalking(int lin, int col) {
 
 		assert labyrinth.isRoad(lin, col);

@@ -25,10 +25,8 @@ public class PathFinder {
 
 	static public int pause = 0;
 	private static Point endPosition;
-	private Map markedPositions;
-	private Map finalMarkedPositions;
 	private static Labyrinth labyrinth;
-	private int[][] blocksArray;
+	private final int[][] blocksArray;
 	
 	static char prisonSymbol;
 	static char hindingPlaceSymbol;
@@ -38,11 +36,11 @@ public class PathFinder {
 
 	/**
 	 *
-	 * @param labyrinth
-	 * @param extraSymbols
+	 * @param labyrinth labyrinth of map
+	 * @param extraSymbols symbols in the map
+	 * @param blocksArray array of points without road
 	 */
 	public PathFinder(Labyrinth labyrinth, char[] extraSymbols, int[][] blocksArray) {
-		markedPositions = new TreeMap<>();
 		this.labyrinth = labyrinth;
 
 		prisonSymbol = extraSymbols[0];
@@ -53,9 +51,9 @@ public class PathFinder {
 	/**
 	 * getGPSPositions
 	 *
-	 * @param endPoint
-	 * @param startPoint
-	 * @return
+	 * @param endPoint point that ends
+	 * @param startPoint start point
+	 * @return a list
 	 */
 	public List getGPSPositions(Point startPoint, Point endPoint) {
 		
@@ -63,8 +61,8 @@ public class PathFinder {
 		
 		Node initialNode = new Node(startPoint.x, startPoint.y);
         Node finalNode = new Node(endPoint.x, endPoint.y);
-        int rows = 24;
-        int cols = 24;
+        int rows = labyrinth.numberOfLines;
+        int cols = labyrinth.numberOfColumns;
         AStar aStar = new AStar(rows, cols, initialNode, finalNode);
 		
 		aStar.setBlocks(blocksArray);
@@ -78,62 +76,6 @@ public class PathFinder {
 	}
 	
 	
-	/**
-	 * Backtracking path search algorithm
-	 *
-	 * @param distance
-	 * @param lin
-	 * @param col
-	 * @param markedPositions
-	 * @param color
-	 * @return
-	 */
-	private boolean searchPath(int distance, int lin, int col, Map markedPositions, Color color) {
-
-		boolean result = false;
-
-		if (labyrinth.validPosition(lin, col) && labyrinth.isRoad(lin, col)) {
-			if (lin == endPosition.y && col == endPosition.x) {
-
-				unmarkPosition(lin, col, markedPositions);
-
-				
-				result = true;
-
-				finalMarkedPositions = new HashMap<>(markedPositions);
-
-			} else if (freePosition(lin, col, markedPositions)) {
-				markPosition(lin, col, color);
-
-				markedPositions.put(String.valueOf(lin) + "_" + String.valueOf(col), markedPositions.size());
-				unmarkPosition(lin, col, markedPositions);
-
-				if (searchPath(distance + 1, lin - 1, col, markedPositions, color)) // North
-				{
-					result = true;
-				} else if (searchPath(distance + 1, lin, col + 1, markedPositions, color)) // East
-				{
-					result = true;
-				} else if (searchPath(distance + 1, lin, col - 1, markedPositions, color)) // West
-				{
-					result = true;
-				} else if (searchPath(distance + 1, lin + 1, col, markedPositions, color)) // South
-				{
-					result = true;
-				} else {
-					markPosition(lin, col, color);
-					markedPositions.put(String.valueOf(lin) + "_" + String.valueOf(col), markedPositions.size());
-					unmarkPosition(lin, col, markedPositions);
-				}
-
-				//GBoard.sleep(1);
-				clearPosition(lin, col, markedPositions);
-
-			}
-		}
-
-		return result;
-	}
 
 	/**
 	 * isSymbolPosition

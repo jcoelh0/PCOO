@@ -16,11 +16,11 @@ public class Interpol {
 	private Point[] thiefPosition;
 	private boolean thiefSearh = true;
 	private final boolean thiefCaught;
-	private boolean[] policeFoundThief;
+	private final boolean[] policeFoundThief;
 	private boolean thiefGoingToPrison = false;
 	private int numberOfThiefs;
-	private boolean thiefsFound = false;
-	private boolean tsry = false;
+	//private boolean thiefsFound = false;
+	private boolean lookingForThief = false;
 	LinkedList<Integer> thiefs = new LinkedList<>();
 	private boolean theftHappening = false;
 	private Point prison;
@@ -44,8 +44,8 @@ public class Interpol {
 	
 	public synchronized void theftReported(int id){
 		theftHappening = true;
-		thiefsFound = true;
-		tsry = true;
+		//thiefsFound = true;
+		lookingForThief = true;
 		thiefs.add(id);
 		notify();
 		
@@ -53,7 +53,7 @@ public class Interpol {
 	
 	public synchronized int waitingForCrime(){		
 		
-		while(!tsry && numberOfThiefs!=0){
+		while(!lookingForThief && numberOfThiefs!=0){
 			
 			try {
 				wait();	
@@ -75,13 +75,13 @@ public class Interpol {
 			}*/
 			
 		}
-		tsry = false;
+		lookingForThief = false;
 		if(numberOfThiefs==0)
 			return -1;
 		return thiefs.remove();
 	}
 	
-	public int PoliceFoundThief(int lin, int col) {
+	public synchronized int PoliceFoundThief(int lin, int col) {
         assert thiefPosition != null;
 		
         for (int i = 0; i < numberOfThiefs; i++) {
@@ -106,9 +106,9 @@ public class Interpol {
 		return policeFoundThief[id];
     }
 	
-	public void setThiefPosition(int lin, int col, int id){
+	public synchronized void setThiefPosition(int lin, int col, int id){
 		thiefFound[id] = true;
-		thiefsFound = true;
+		//thiefsFound = true;
 		thiefPosition[id].setLocation(lin, col);
 	}
 	
@@ -120,7 +120,7 @@ public class Interpol {
 		return theftHappening;
 	}
 	
-	public void setThiefGoingToPrison(){
+	public synchronized void setThiefGoingToPrison(){
 		thiefGoingToPrison = true;
 	}
 	
@@ -134,11 +134,11 @@ public class Interpol {
 	
 	public synchronized void safe(int id){
 		thiefFound[id] = false;
-		thiefsFound = false;
+		//thiefsFound = false;
 		numberOfThiefs -= 1;
 	}
 	
-	public boolean thiefFound(int id){
+	public synchronized boolean thiefFound(int id){
 		return thiefFound[id];
 	}
 	

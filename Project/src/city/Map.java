@@ -27,20 +27,23 @@ public final class Map {
 	protected static Labyrinth labyrinth;
 	private final List<int[]> blocksArray;
 	private Point prisonSymbol, thiefHome, store1, store2;
+	private String map = "map1.txt";
 	
-	public Map(char[] symbols, Gelem[] gelems, Point[] points){
+	
+	public Map(String map, char[] symbols, Gelem[] gelems){
 		blocksArray = new ArrayList<>();
-		createMap(symbols, gelems, points);
+		if(map != null)
+			this.map = map;
+		createMap(symbols, gelems);
 		
 	}
 	
-	public void createMap(char[] symbols, Gelem[] gelems, Point[] points){
-		String map = "map1.txt";
+	public void createMap(char[] symbols, Gelem[] gelems){
 		
+			
 		out.println("Usage: CityRun <map-file>");
 		out.println();
 		out.println("Using \"" + map + "\" as default");
-		
 		
 
 		if (!Labyrinth.validMapFile(map)) {
@@ -55,6 +58,24 @@ public final class Map {
 		labyrinth = new Labyrinth(map, symbols, N);
 		
 		board = labyrinth.board;
+		
+		Point[] points = new Point[4];
+		points[0] = new Point(17,5); //prison
+		points[1] = new Point(15,1); //safe house
+		points[2] = new Point(4,15); //store1
+		points[3] = new Point(10,15); //store2
+		for (int i = 0; i < points.length; i++) {
+			
+			if(!labyrinth.isRoad(points[i].x, points[i].y)){
+				while(true){
+					points[i].y += 1;
+					if(labyrinth.isRoad(points[i].x, points[i].y))
+						break;
+				}
+			}	
+		}
+		
+		
 		
 		prisonSymbol = points[0];
 		thiefHome = points[1];
@@ -145,8 +166,8 @@ public final class Map {
 		
 		
 		//Creation of the map with images
-		for (int i = 0; i < board.cellHeight()-1; i++) {
-			for (int j = 0; j < board.cellWidth()-1; j++) {
+		for (int i = 0; i < labyrinth.numberOfLines; i++) {
+			for (int j = 0; j < labyrinth.numberOfColumns; j++) {
 				if(mapLab[i][j] == 0){
 					//baixo                 cima             esquerda                 direita
 					

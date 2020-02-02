@@ -5,10 +5,7 @@ import entities.Helicopter;
 import entities.Police;
 import entities.Thief;
 import java.awt.Color;
-import java.awt.Point;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import pt.ua.gboard.Gelem;
 import pt.ua.gboard.basic.StringGelem;
 import pt.ua.gboard.games.Labyrinth;
@@ -24,12 +21,6 @@ public class CityRun {
 		int numberOfThiefs = 7;
 		int numberOfPolice = 10;
 		
-		Point[] points = new Point[4];
-		
-		points[0] = new Point(18,22); //prison
-		points[1] = new Point(17,1); //safe house
-		points[2] = new Point(4,22); //store1
-		points[3] = new Point(9,19); //store2
 
 		char prisonSymbol = 'P';
 		char store1 = '1';
@@ -51,10 +42,13 @@ public class CityRun {
 			new StringGelem("" + store1, Color.green, 1, 1),
 			new StringGelem("" + store2, Color.green, 1, 1)
 		};
-	
 		
+		String mapa = null;
+		if(args.length > 0){
+			mapa = args[0];
+		}
 		
-		Map map = new Map(symbols, gelems, points);
+		Map map = new Map(mapa, symbols, gelems);
 		
 		Labyrinth labyrinth = map.getLabyrinth();
 		
@@ -63,10 +57,11 @@ public class CityRun {
 		Store store = new Store(interpol);
 		
 		List<int[]> blocksArrayList = map.getBlocksArray();
-		int[][] blocksArray = new int[blocksArrayList.size()][];
+		int[][] blocksArray = new int[blocksArrayList.size()][2];
 		
 		for (int i = 0; i < blocksArrayList.size(); i++) {
-			blocksArray[i]= blocksArrayList.get(i);
+			blocksArray[i][0] = blocksArrayList.get(i)[0];
+			blocksArray[i][1] = blocksArrayList.get(i)[1];
 		}
 		
 		

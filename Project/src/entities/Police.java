@@ -16,9 +16,9 @@ import pt.ua.gboard.games.Labyrinth;
  *
  * @author João Coelho
  */
-public class Police extends Thread implements Actions {
+public class Police extends Thread implements Person {
 
-	private boolean[] thiefFound;
+	private final boolean[] thiefFound;
 	Labyrinth labyrinth;
 	protected GBoard board;
 	Random rand = new Random();
@@ -51,16 +51,9 @@ public class Police extends Thread implements Actions {
 		currentPos.x = prison.x;
 		currentPos.y  = prison.y;
 
-		
 		board.draw(ge, currentPos.x, currentPos.y, 1);
 		
 		boolean thiefsFound;
-		
-		LinkedList<Integer> thiefs = new LinkedList<>();
-		
-		for (int i = 0; i < interpol.getNumberOfThiefs(); i++) {
-			thiefs.add(i);
-		}
 		
 		while(interpol.getNumberOfThiefs() != 0){
 			
@@ -81,73 +74,16 @@ public class Police extends Thread implements Actions {
 			
 			if(thiefsFound){
 				thiefCaught = false;
-				//System.err.println("Police "+ id + " caught thief " + idx + "!");
 			}
 			
 		}
 	}
 
-	@Override
-	public Point randomWalking(int lin, int col) {
-
-		assert labyrinth.isRoad(lin, col);
-
-		Point pos = new Point();
-
-		int[][] options = new int[4][2];
-
-		options[0][0] = lin;
-		options[0][1] = col + 1;
-
-		options[1][0] = lin + 1;
-		options[1][1] = col;
-
-		options[2][0] = lin;
-		options[2][1] = col - 1;
-
-		options[3][0] = lin - 1;
-		options[3][1] = col;
-
-		int n;
-
-		while (true) {
-			n = rand.nextInt(4);
-			if (!labyrinth.isWall(options[n][0], options[n][1])) {
-
-				break;
-			}
-		}
-		
-		board.move(ge, lin, col, 1, options[n][0], options[n][1], 1);
-
-		switch (n) {
-			case 0:
-				col = col + 1;
-				break;
-			case 1:
-				lin = lin + 1;
-				break;
-			case 2:
-				col = col - 1;
-				break;
-			case 3:
-				lin = lin - 1;
-				break;
-			default:
-				break;
-		}
-		GBoard.sleep(100);
-
-		pos.x = lin;
-		pos.y = col;
-
-		return pos;
-	}
 
 	private void catchThief(int id) {
 		
 		
-		while (interpol.thiefFound(id) && interpol.getNumberOfThiefs() != 0 ) { ///FIX THIS
+		while (interpol.thiefFound(id) && interpol.getNumberOfThiefs() != 0 ) { 
 			Point thiefPos = interpol.getThiefPosition(id);
 			
 			List<Node> positions = path.getGPSPositions(currentPos, thiefPos);
@@ -156,6 +92,7 @@ public class Police extends Thread implements Actions {
 		}
 	}
 
+	@Override
 	public Point goToPosition(int currentLine, int currentColumn, List<Node> positions) {
 		assert positions != null;
 		
@@ -172,6 +109,7 @@ public class Police extends Thread implements Actions {
         return new Point(currentLine, currentColumn);
     }
 
+	@Override
 	public boolean moveToPosition(int currentLine, int currentColumn, int line, int column) {
 		
 		GBoard.sleep(100);
