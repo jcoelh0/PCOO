@@ -1,0 +1,18 @@
+digraph foo {
+  rankdir = BT;
+  "FloorPlan"
+  "WorkArea" -> "ChairArea"
+  "VendingMachineArea" -> "IVendingMachineArea"
+  "VendingMachineArea" -> "RoomPlan"
+  "HallwayArea" -> "RoomPlan"
+  "EatingArea" -> "ChairArea"
+   "ChairArea" -> "RoomPlan"
+   "ChairArea" -> "IChairArea"
+  "RoomResource"
+  "RoomPlan" -> "IRoomPlan"
+  "Office"
+  "Employee"
+  "IRoomPlan"
+  "IVendingMachineArea" -> "IRoomPlan"
+  "IChairArea" -> "IRoomPlan"
+}
